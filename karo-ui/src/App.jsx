@@ -1,5 +1,5 @@
 import { useState } from "react";
-import "./App.css";
+import "./index.css";
 import CircularWave from "./CircularWave";
 
 export default function App() {
