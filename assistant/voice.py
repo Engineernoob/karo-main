@@ -1,35 +1,42 @@
-import pyttsx3
-import speech_recognition as sr
+import whisper
+import pyaudio
+import wave
+import tempfile
+
+model = whisper.load_model("base")  # You can also use "tiny", "small", "medium", "large"
 
 def listen_to_voice() -> str:
-    """Captures mic input and returns text using SpeechRecognition."""
-    r = sr.Recognizer()
-    with sr.Microphone() as source:
-        print("\n[Voice Mode] Listening...")
-        r.pause_threshold = 1 # seconds of non-speaking audio before a phrase is considered complete
-        r.adjust_for_ambient_noise(source, duration=1) # listen for 1 second to calibrate the energy threshold for ambient noise levels
-        audio = r.listen(source)
+    print("🎙️ [Voice Mode] Listening with Whisper...")
 
-    try:
-        text = r.recognize_google(audio)
-        print(f"[Voice Mode] You said: {text}")
-        return text
-    except sr.UnknownValueError:
-        print("[Voice Mode] Could not understand audio")
-        return ""
-    except sr.RequestError as e:
-        print(f"[Voice Mode] Could not request results from Google Speech Recognition service; {e}")
-        return ""
+    CHUNK = 1024
+    FORMAT = pyaudio.paInt16
+    CHANNELS = 1
+    RATE = 16000
+    RECORD_SECONDS = 5  # You can increase for longer input
+    temp_wav = tempfile.NamedTemporaryFile(suffix=".wav", delete=False)
 
-def speak(text: str):
-    """Uses pyttsx3 to read responses aloud."""
-    print(f"\n[Voice Mode] Speaking: {text}")
-    try:
-        engine = pyttsx3.init()
-        engine.say(text)
-        engine.runAndWait()
-    except Exception as e:
-        print(f"[Voice Mode] Error speaking: {e} (pyttsx3 might not be fully configured or available)")
-        print("Please ensure you have a compatible text-to-speech engine installed on your system.")
+    p = pyaudio.PyAudio()
+    stream = p.open(format=FORMAT, channels=CHANNELS, rate=RATE, input=True, frames_per_buffer=CHUNK)
+    frames = []
 
+    print("🟢 Recording...")
+    for _ in range(0, int(RATE / CHUNK * RECORD_SECONDS)):
+        data = stream.read(CHUNK)
+        frames.append(data)
 
+    print("🛑 Done recording.")
+    stream.stop_stream()
+    stream.close()
+    p.terminate()
+
+    wf = wave.open(temp_wav.name, 'wb')
+    wf.setnchannels(CHANNELS)
+    wf.setsampwidth(p.get_sample_size(FORMAT))
+    wf.setframerate(RATE)
+    wf.writeframes(b''.join(frames))
+    wf.close()
+
+    # Transcribe with Whisper
+    result = model.transcribe(temp_wav.name)
+    print(f"[Whisper] You said: {result['text']}")
+    return result["text"].strip()
