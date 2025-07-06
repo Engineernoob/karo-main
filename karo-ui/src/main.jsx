@@ -1,10 +1,15 @@
 import React from "react";
 import ReactDOM from "react-dom/client";
-import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 import App from "./App";
+import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 
+// Optional: customize the Chakra theme
 const theme = extendTheme({
-  styles: { global: { body: { bg: "gray.800", color: "white" } } },
+  styles: {
+    global: {
+      body: { bg: "gray.800", color: "white", margin: 0, padding: 0 },
+    },
+  },
 });
 
 ReactDOM.createRoot(document.getElementById("root")).render(
