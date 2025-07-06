@@ -2,18 +2,15 @@ import os
 import sys
 from dotenv import load_dotenv
 from assistant.agent import Agent
-from assistant.duplex import start_duplex_conversation
-from assistant.voice import speak
+from assistant.voice import listen_to_voice
 
 # Load environment variables from .env file
 load_dotenv()
 
 def main():
-    print("🧠 Initializing Karo AI Assistant... Stand by.")
-    print("🔹 Interface mode: Terminal")
-    print("🔹 Use --jarvis for voice-driven Jarvis mode, or type 'exit' to quit.\n")
-
-    use_jarvis = "--jarvis" in sys.argv
+    print("🧠 Karo.")
+    print("• Speak your command, or type it below.")
+    print("• Say or type 'exit' to quit.\n")
 
     agent = Agent(
         model=os.getenv("OLLAMA_MODEL", "dolphin-phi"),
@@ -21,18 +18,21 @@ def main():
         memory_file="data/agent_memory.jsonl"
     )
 
-    if use_jarvis:
-        speak("Jarvis mode online. Say your command when ready.")
-        start_duplex_conversation(agent)
-    else:
-        while True:
-            task = input("🪶 Awaiting your command: ")
-            if task.strip().lower() in ('exit', 'quit', 'shutdown'):
-                print("🔻 Shutting down. Until next time.")
-                break
-            if task:
-                print(f"📡 Routing task to Karo: '{task}'")
-                agent.run(task)
+    while True:
+        # Try to capture a voice command first
+        task = listen_to_voice().strip()
+        if not task:
+            # No speech detected—fall back to text input
+            task = input("🪶 Enter command: ").strip()
+
+        if not task:
+            continue
+        if task.lower() in ("exit", "quit", "shutdown"):
+            print("🔻 Shutting down. Goodbye.")
+            break
+
+        print(f"📡 Processing: {task}")
+        agent.run(task)
 
 if __name__ == "__main__":
     main()
