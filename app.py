@@ -3,6 +3,7 @@ import sys
 from dotenv import load_dotenv
 from assistant.agent import Agent
 from assistant.voice import listen_to_voice
+from assistant.background import BackgroundTaskManager
 
 # Load environment variables from .env file
 load_dotenv()
@@ -16,6 +17,7 @@ def main():
         model=os.getenv("OLLAMA_MODEL", "dolphin-phi"),
         system_prompt_path="prompts/system.txt",
         memory_file="data/agent_memory.jsonl"
+        bg = BackgroundTaskManager()
     )
 
     while True:
