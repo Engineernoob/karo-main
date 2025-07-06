@@ -1,3 +1,5 @@
+# assistant/duplex.py
+
 import threading
 import time
 from queue import Queue
@@ -15,16 +17,15 @@ class DuplexManager:
 
     def _listen_loop(self):
         while not self.stop_event.is_set():
-            # Only listen if not speaking and listening is enabled
             if self.listening.is_set() and not self.speaking.is_set():
                 try:
                     text = listen_to_voice()
                     if text:
                         self.input_queue.put(text)
-                        self.listening.clear() # Stop listening after a command is received
+                        self.listening.clear()
                 except Exception as e:
                     print(f"[Duplex] Listening error: {e}")
-            time.sleep(0.1) # Small delay to prevent busy-waiting
+            time.sleep(0.1)
 
     def _speak_loop(self):
         while not self.stop_event.is_set():
@@ -33,8 +34,8 @@ class DuplexManager:
                 self.speaking.set()
                 speak(text)
                 self.speaking.clear()
-                self.listening.set() # Resume listening after speaking is done
-            time.sleep(0.1) # Small delay
+                self.listening.set()
+            time.sleep(0.1)
 
     def _agent_processing_loop(self):
         while not self.stop_event.is_set():
@@ -44,29 +45,41 @@ class DuplexManager:
                     self.stop_event.set()
                     self.output_queue.put("Goodbye!")
                     break
-                
+
                 print(f"[Duplex] Processing task: {task}")
-                # Call the agent's run method and get its response
                 response = self.agent_run_callback(task)
-                self.output_queue.put(response) # Put the agent's response into the output queue for speaking
+                # If agent.run() prints but returns None, you may want to capture output
+                if isinstance(response, str):
+                    self.output_queue.put(response)
             time.sleep(0.1)
 
     def start_duplex(self):
-        self.listening.set() # Start listening initially
-
-        listen_thread = threading.Thread(target=self._listen_loop)
-        speak_thread = threading.Thread(target=self._speak_loop)
-        agent_thread = threading.Thread(target=self._agent_processing_loop)
-
-        listen_thread.start()
-        speak_thread.start()
-        agent_thread.start()
-
-        # Keep main thread alive until stop event is set
-        while not self.stop_event.is_set():
-            time.sleep(1)
-
-        listen_thread.join()
-        speak_thread.join()
-        agent_thread.join()
+        """Begin the listening–processing–speaking threads."""
+        self.listening.set()
+        threads = [
+            threading.Thread(target=self._listen_loop, daemon=True),
+            threading.Thread(target=self._speak_loop, daemon=True),
+            threading.Thread(target=self._agent_processing_loop, daemon=True),
+        ]
+        for t in threads:
+            t.start()
+        try:
+            # Keep alive until stop_event is set
+            while not self.stop_event.is_set():
+                time.sleep(0.5)
+        except KeyboardInterrupt:
+            pass
+        print("[Duplex] Shutting down...")
+        self.stop_event.set()
+        for t in threads:
+            t.join()
         print("[Duplex] Duplex mode stopped.")
+
+# —————— Public entry point ——————
+def start_duplex_conversation(agent):
+    """
+    Launch full–duplex voice mode.
+    Pass in your Agent instance; we will call its .run(task) for each utterance.
+    """
+    manager = DuplexManager(agent.run)
+    manager.start_duplex()
