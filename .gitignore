@@ -14,7 +14,7 @@ venv/
 /karo/requirements.txt
 
 # Data
-karo/data/agent_memory.jsonl
+agent_memory.jsonl
 
 # Environment variables
 .env
