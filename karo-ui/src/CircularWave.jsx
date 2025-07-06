@@ -1,9 +1,8 @@
-import { Box, usePrefersReducedMotion } from "@chakra-ui/react";
+// src/CircularWave.jsx
+import { Box } from "@chakra-ui/react";
 import { keyframes } from "@emotion/react";
 
 export default function CircularWave({ isActive }) {
-  const prefersReducedMotion = usePrefersReducedMotion();
-
   // Define the pulsing ring keyframes using Emotion
   const pulse = keyframes`
     0%   { transform: scale(0); opacity: 0.8; }
@@ -11,9 +10,7 @@ export default function CircularWave({ isActive }) {
     100% { transform: scale(1.5); opacity: 0; }
   `;
 
-  const animation = prefersReducedMotion
-    ? undefined
-    : `${pulse} 2s infinite ease-out`;
+  const animation = `${pulse} 2s infinite ease-out`;
 
   if (!isActive) return null;
 
