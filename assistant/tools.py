@@ -6,7 +6,7 @@ def search_web(query: str) -> str:
     results = DDGS().text(keywords=query, max_results=3)
     formatted_results = []
     for r in results:
-        formatted_results.append(f"Title: {r["title"]}\nURL: {r["href"]}")
+formatted_results.append(f"Title: {r['title']}\nURL: {r['href']}")
     return "\n\n".join(formatted_results)
 
 def open_web(query: str):
