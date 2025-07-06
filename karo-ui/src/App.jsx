@@ -12,7 +12,7 @@ export default function App() {
       alignItems="center"
       justifyContent="center"
       bg="gray.800"
-      color="white"
+      color="grey"
     >
       <Button colorScheme="blue" mb={6} onClick={() => setListening(v => !v)}>
         {listening ? "Stop Listening" : "Activate Karo"}

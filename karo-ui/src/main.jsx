@@ -7,7 +7,7 @@ import { ChakraProvider, extendTheme } from "@chakra-ui/react";
 const theme = extendTheme({
   styles: {
     global: {
-      body: { bg: "gray.800", color: "white", margin: 0, padding: 0 },
+      body: { bg: "gray.800", color: "grey", margin: 0, padding: 0 },
     },
   },
 });
