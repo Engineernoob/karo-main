@@ -16,7 +16,7 @@ def main():
     agent = Agent(
         model=os.getenv("OLLAMA_MODEL", "dolphin-phi"),
         system_prompt_path = "prompts/system.txt",
-        memory_file="karo-main/data/agent_memory.jsonl"
+        memory_file="data/agent_memory.jsonl"
     )
 
     while True:
