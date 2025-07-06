@@ -1,9 +1,7 @@
 import os
-import sys
 from dotenv import load_dotenv
 from assistant.agent import Agent
 from assistant.voice import listen_to_voice
-from assistant.wake import WakeWordListener
 from assistant.background import BackgroundTaskManager
 from assistant.duplex import start_duplex_conversation
 
@@ -25,11 +23,7 @@ def main():
         memory_file="data/agent_memory.jsonl"
     )
 
-    # 3) Setup wake-word listener now that `agent` exists
-    listener = WakeWordListener(callback=lambda: start_duplex_conversation(agent))
-    listener.start()
-
-    # 5) Main loop: auto-detect voice or text
+    # 3) Main loop: auto-detect voice or text
     while True:
         task = listen_to_voice().strip()
         if not task:
@@ -39,7 +33,6 @@ def main():
             continue
         if task.lower() in ("exit", "quit", "shutdown"):
             print("🔻 Shutting down. Goodbye.")
-            listener.stop()
             break
 
         print(f"📡 Processing: {task}")
