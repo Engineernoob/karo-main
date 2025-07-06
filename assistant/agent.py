@@ -4,7 +4,7 @@ from assistant.agent_router import route_task
 from assistant.semantic_memory import SemanticMemory
 
 class Agent:
-    def __init__(self, model="dolphin-phi", system_prompt_path="prompts/system.txt", memory_file="data/agent_memory.jsonl"):
+    def __init__(self, model="dolphin-phi", system_prompt_path="prompts/system.txt", memory_file="karo-main/data/agent_memory.jsonl"):
         self.llm_engine = LLMEngine(model=model, system_prompt_path=system_prompt_path)
         self.memory = AgentMemory(memory_file=memory_file)
         self.semantic_memory = SemanticMemory() # Initialize semantic memory
