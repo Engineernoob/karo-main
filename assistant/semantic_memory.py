@@ -9,15 +9,19 @@ class SemanticMemory:
 
     def add_to_memory(self, text: str, metadata: dict = None):
         embedding = self.model.encode(text).tolist()
-        # ChromaDB requires a unique ID for each document
         doc_id = str(len(self.collection.get(include=["documents"])["documents"]) + 1)
+
+        # Ensure metadata is never empty (Chroma requires at least one attribute)
+        if not metadata:
+            metadata = {"source": "karo"}  # or "task": text[:30] as fallback
+
         self.collection.add(
             documents=[text],
             embeddings=[embedding],
-            metadatas=[metadata if metadata else {}],
+            metadatas=[metadata],
             ids=[doc_id]
         )
-        print(f"Added to semantic memory: {text[:50]}...")
+        print(f"✅ Added to semantic memory: {text[:50]}...")
 
     def search_memory(self, query: str, n_results: int = 5) -> list[str]:
         query_embedding = self.model.encode(query).tolist()
@@ -27,5 +31,3 @@ class SemanticMemory:
             include=["documents"]
         )
         return results["documents"][0] if results["documents"] else []
-
-
