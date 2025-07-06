@@ -1,3 +1,4 @@
+import os
 import webbrowser
 import subprocess
 import psutil
@@ -5,49 +6,67 @@ from duckduckgo_search import DDGS
 from assistant.engine import LLMEngine
 
 def search_web(query: str) -> str:
+    """
+    Perform a DuckDuckGo search and return the top 3 result titles and URLs.
+    """
     results = DDGS().text(keywords=query, max_results=3)
-    formatted_results = []
+    formatted = []
     for r in results:
-        formatted_results.append(f"Title: {r['title']}\nURL: {r['href']}")
-    return "\n\n".join(formatted_results)
+        formatted.append(f"Title: {r['title']}\nURL: {r['href']}")
+    return "\n\n".join(formatted)
 
-def open_web(query: str):
-    webbrowser.open(f"https://duckduckgo.com/?q={query}")
+def open_web(query: str) -> str:
+    """
+    Launches a browser search for the given query.
+    """
+    url = f"https://duckduckgo.com/?q={query}"
+    webbrowser.open(url)
     return f"Opened web search for: {query}"
 
 def summarize_text(text: str, llm_engine: LLMEngine) -> str:
+    """
+    Summarize the given text using the provided LLM engine.
+    """
     prompt = f"Summarize the following text concisely:\n\n{text}"
-    summary = llm_engine.chat(prompt)
-    return summary
+    return llm_engine.chat(prompt)
 
 def open_app(app_name: str) -> str:
-    """Opens a specified application. Note: This is OS-dependent and might require specific commands."""
+    """
+    Opens a specified application (OS-dependent). Returns status message.
+    """
     try:
-        if os.name == 'posix': # macOS, Linux, Unix
+        if os.name == 'posix':  # macOS, Linux, Unix
             subprocess.Popen([app_name])
-        elif os.name == 'nt': # Windows
+        elif os.name == 'nt':   # Windows
             os.startfile(app_name)
         else:
-            return f"Unsupported operating system for opening applications: {os.name}"
-        return f"Attempted to open {app_name}."
+            return f"Unsupported OS: {os.name}"
+        return f"Attempted to open application: {app_name}"
     except FileNotFoundError:
-        return f"Application \'{app_name}\' not found. Please ensure it is in your system\'s PATH."
+        return f"Application '{app_name}' not found. Ensure it's in your PATH."
     except Exception as e:
-        return f"Error opening {app_name}: {e}"
+        return f"Error opening '{app_name}': {e}"
 
 def read_email() -> str:
-    """Placeholder for reading emails. Requires integration with an email API (e.g., Gmail API, Outlook API)."""
-    return "Reading emails is a complex task that requires integration with a specific email service API (e.g., Gmail, Outlook). This functionality is not yet implemented. Please read your emails manually."
+    """
+    Placeholder: Returns a stub message about email integration status.
+    """
+    return (
+        "Reading emails requires an email API (e.g., Gmail API). "
+        "This function is not yet implemented."
+    )
 
 def system_stats() -> str:
-    """Retrieves current system statistics (CPU, Memory, Disk)."""
-    cpu_percent = psutil.cpu_percent(interval=1)
-    memory_info = psutil.virtual_memory()
-    disk_usage = psutil.disk_usage("/")
-
-    stats = (
-        f"CPU Usage: {cpu_percent:.1f}%\n"
-        f"Memory Usage: {memory_info.percent:.1f}% ({memory_info.used / (1024**3):.2f} GB used / {memory_info.total / (1024**3):.2f} GB total)\n"
-        f"Disk Usage: {disk_usage.percent:.1f}% ({disk_usage.used / (1024**3):.2f} GB used / {disk_usage.total / (1024**3):.2f} GB total)"
+    """
+    Retrieves and returns current CPU, memory, and disk usage stats.
+    """
+    cpu = psutil.cpu_percent(interval=1)
+    mem = psutil.virtual_memory()
+    disk = psutil.disk_usage("/")
+    return (
+        f"CPU Usage: {cpu:.1f}%\n"
+        f"Memory Usage: {mem.percent:.1f}% "
+        f"({mem.used / 2**30:.2f}GB / {mem.total / 2**30:.2f}GB)\n"
+        f"Disk Usage: {disk.percent:.1f}% "
+        f"({disk.used / 2**30:.2f}GB / {disk.total / 2**30:.2f}GB)"
     )
-    return stats
