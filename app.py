@@ -23,15 +23,12 @@ def main():
         model=os.getenv("OLLAMA_MODEL", "dolphin-phi"),
         system_prompt_path="prompts/system.txt",
         memory_file="data/agent_memory.jsonl",
-        bg=bg_manager
+        bg_manager = BackgroundTaskManager()
     )
 
     # 3) Setup wake-word listener now that `agent` exists
     listener = WakeWordListener(callback=lambda: start_duplex_conversation(agent))
     listener.start()
-
-    # 4) Start any persistent background jobs (if your manager needs it)
-    bg_manager.start()
 
     # 5) Main loop: auto-detect voice or text
     while True:

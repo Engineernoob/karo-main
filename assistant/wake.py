@@ -1,14 +1,12 @@
-# assistant/wake.py
 import os
-import wave
-import pyaudio
 import json
+import pyaudio
 from vosk import Model, KaldiRecognizer
 
 class WakeWordListener:
     """
     Listens continuously for the phrase “hey karo” via Vosk.
-    No monthly limits, runs fully offline.
+    Runs fully offline without limits.
     """
     def __init__(self, callback, model_path="/Volumes/My Passport for Mac/karo-main/vosk-models/vosk-model-small-en-us-0.15"):
         if not os.path.isdir(model_path):
@@ -18,10 +16,10 @@ class WakeWordListener:
             )
         self.callback = callback
         self.model = Model(model_path)
-        self.rec = KaldiRecognizer(self.model, 16000, '["hey karo"]')
+        self.recognizer = KaldiRecognizer(self.model, 16000, '["hey karo"]')
 
     def start(self):
-        """Begin listening in a blocking loop. Call callback() when wake-word is heard."""
+        """Begin listening in a blocking loop. Calls callback() when wake-word is heard."""
         pa = pyaudio.PyAudio()
         stream = pa.open(format=pyaudio.paInt16,
                          channels=1,
@@ -34,13 +32,13 @@ class WakeWordListener:
         try:
             while True:
                 data = stream.read(4000, exception_on_overflow=False)
-                if self.rec.AcceptWaveform(data):
-                    res = json.loads(self.rec.Result())
-                    if res.get("text", "") == "hey karo":
+                if self.recognizer.AcceptWaveform(data):
+                    result = json.loads(self.recognizer.Result())
+                    if result.get("text", "") == "hey karo":
                         print("[Wake Word] Detected “hey karo”!")
                         self.callback()
         except KeyboardInterrupt:
-            pass
+            print("[Wake Word] Interrupted by user.")
         finally:
             stream.stop_stream()
             stream.close()
