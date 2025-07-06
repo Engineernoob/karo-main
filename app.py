@@ -12,10 +12,8 @@ def main():
     print("• Speak your command, or type it below.")
     print("• Say or type 'exit' to quit.\n")
 
-    # Setup background task manager
     bg_manager = BackgroundTaskManager()
 
-    # Instantiate Agent with background manager
     agent = Agent(
         model=os.getenv("OLLAMA_MODEL", "dolphin-phi"),
         system_prompt_path="prompts/system.txt",
@@ -23,7 +21,6 @@ def main():
         bg=bg_manager
     )
 
-    # Main loop: auto-detect voice or text input
     while True:
         task = listen_to_voice().strip()
         if not task:
@@ -35,8 +32,11 @@ def main():
             print("🔻 Shutting down. Goodbye.")
             break
 
-        print(f"📡 Processing: {task}")
-        agent.run(task)
+        print("\n🤔 Karo is thinking...")
+        response = agent.run(task)  # run() should return Karo's final response string
+
+        if response:
+            print(f"\nKaro: {response}\n")
 
 if __name__ == "__main__":
     main()
