@@ -10,7 +10,7 @@ class WakeWordListener:
     Listens continuously for the phrase “hey karo” via Vosk.
     No monthly limits, runs fully offline.
     """
-    def __init__(self, callback, model_path="models/vosk-small-en-us-0.15"):
+    def __init__(self, callback, model_path="/Volumes/My Passport for Mac/karo-main/vosk-models/vosk-model-small-en-us-0.15"):
         if not os.path.isdir(model_path):
             raise FileNotFoundError(
                 f"Vosk model not found at {model_path}. "
