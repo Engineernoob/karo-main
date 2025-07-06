@@ -29,7 +29,7 @@ class Agent:
             return "task"
 
     def run(self, high_level_task: str) -> str:
-    intent = self.classify_intent(high_level_task)
+        intent = self.classify_intent(high_level_task)
 
     if intent == "conversational":
         print(f"\nKaro: Detected conversational input.")
