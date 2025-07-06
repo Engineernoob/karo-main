@@ -9,7 +9,7 @@ class Agent:
         self.memory = AgentMemory(memory_file=memory_file)
         self.semantic_memory = SemanticMemory() # Initialize semantic memory
         self.bg = bg  # Background task for the agent (e.g., monitoring sensors)
-       self.listener = listener  # Listener for tasks or events
+        self.listener = listener  # Listener for tasks or events
 
     def run(self, high_level_task: str):
         print(f"\nKaro: Received high-level task: \'{high_level_task}\'")
