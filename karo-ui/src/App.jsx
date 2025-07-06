@@ -1,23 +1,36 @@
-import { useState } from "react";
-import { Button, Box } from "@chakra-ui/react";
+import React, { useState } from "react";
 import CircularWave from "./CircularWave";
 
 export default function App() {
   const [listening, setListening] = useState(false);
+
   return (
-    <Box
-      minH="100vh"
-      display="flex"
-      flexDir="column"
-      alignItems="center"
-      justifyContent="center"
-      bg="gray.800"
-      color="grey"
+    <div
+      style={{
+        minHeight: "100vh",
+        backgroundColor: "#1f2937",
+        color: "#fff",
+        display: "flex",
+        flexDirection: "column",
+        alignItems: "center",
+        justifyContent: "center",
+      }}
     >
-      <Button colorScheme="blue" mb={6} onClick={() => setListening(v => !v)}>
+      <button
+        style={{
+          marginBottom: 24,
+          padding: "12px 24px",
+          backgroundColor: "#2563eb",
+          color: "#fff",
+          border: "none",
+          borderRadius: 8,
+          cursor: "pointer",
+        }}
+        onClick={() => setListening((v) => !v)}
+      >
         {listening ? "Stop Listening" : "Activate Karo"}
-      </Button>
+      </button>
       <CircularWave isActive={listening} />
-    </Box>
+    </div>
   );
 }
