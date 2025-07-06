@@ -3,6 +3,7 @@ import sys
 from dotenv import load_dotenv
 from assistant.agent import Agent
 from assistant.voice import listen_to_voice
+from assistant.wake import WakeWordListener
 from assistant.background import BackgroundTaskManager
 
 # Load environment variables from .env file
@@ -18,6 +19,8 @@ def main():
         system_prompt_path="prompts/system.txt",
         memory_file="data/agent_memory.jsonl"
         bg = BackgroundTaskManager()
+        listener = WakeWordListener(callback=lambda: start_duplex_conversation(agent))
+        listener.start()
     )
 
     while True:
