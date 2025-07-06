@@ -1,0 +1,29 @@
+# Python
+__pycache__/
+*.pyc
+*.pyd
+*.pyo
+*.egg-info/
+.Python
+
+# Virtual environment
+venv/
+.venv/
+
+# Dependencies
+/karo/requirements.txt
+
+# Data
+karo/data/agent_memory.jsonl
+
+# Environment variables
+.env
+
+# Logs
+*.log
+
+# OS generated files
+.DS_Store
+thumbs.db
+
+
