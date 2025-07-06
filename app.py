@@ -22,8 +22,7 @@ def main():
     agent = Agent(
         model=os.getenv("OLLAMA_MODEL", "dolphin-phi"),
         system_prompt_path="prompts/system.txt",
-        memory_file="data/agent_memory.jsonl",
-        bg_manager = BackgroundTaskManager()
+        memory_file="data/agent_memory.jsonl"
     )
 
     # 3) Setup wake-word listener now that `agent` exists
