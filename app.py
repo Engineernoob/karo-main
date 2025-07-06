@@ -7,6 +7,20 @@ from assistant.voice import listen_to_voice, speak
 # Load environment variables from .env file
 load_dotenv()
 
+def karo_voice_loop(agent: Agent):
+    """Full voice-driven interaction loop."""
+    speak("Voice mode activated. I'm listening.")
+    while True:
+        query = listen_to_voice()
+        if not query:
+            continue
+        if query.lower() in ["exit", "quit", "stop karo"]:
+            speak("Goodbye.")
+            break
+
+        print(f"\n🎯 High-level voice task: {query}")
+        agent.run(query)  # optionally capture response if you want to speak it
+
 def main():
     print("Welcome to Karo AI Assistant!")
     print("Type 'exit' to quit.")
@@ -15,29 +29,19 @@ def main():
 
     agent = Agent(
         model=os.getenv("OLLAMA_MODEL", "dolphin-phi"),
-        system_prompt_path = "prompts/system.txt",
+        system_prompt_path="prompts/system.txt",
         memory_file="data/agent_memory.jsonl"
     )
 
-    while True:
-        if use_voice:
-            task = listen_to_voice()
-        else:
+    if use_voice:
+        karo_voice_loop(agent)
+    else:
+        while True:
             task = input("\nEnter a high-level task for Karo: ")
-
-        if task.lower() == 'exit':
-            if use_voice:
-                speak("Goodbye!")
-            break
-        
-        if task:
-            agent.run(task)
-            # In a real voice application, you might want to capture Karo's final response
-            # and speak it aloud. For now, the agent's print statements will suffice.
-            # If you want to speak the final summary of the task, you'd need to modify
-            # agent.py to return a summary or have a dedicated speaking function.
+            if task.lower() == 'exit':
+                break
+            if task:
+                agent.run(task)
 
 if __name__ == "__main__":
     main()
-
-
